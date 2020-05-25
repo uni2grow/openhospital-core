@@ -2,15 +2,20 @@ package org.isf.medicalstock.model;
 
 import java.math.BigDecimal;
 import java.util.GregorianCalendar;
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
+import org.isf.utils.db.Auditable;
 import org.isf.generaldata.MessageBundle;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /*------------------------------------------
  * Medical Lot - model for the medical entity
@@ -22,7 +27,15 @@ import org.isf.generaldata.MessageBundle;
  *------------------------------------------*/
 @Entity
 @Table(name="MEDICALDSRLOT")
-public class Lot 
+@EntityListeners(AuditingEntityListener.class)
+@AttributeOverrides({
+    @AttributeOverride(name="createdBy", column=@Column(name="LT_CREATED_BY")),
+    @AttributeOverride(name="createdDate", column=@Column(name="LT_CREATED_DATE")),
+    @AttributeOverride(name="lastModifiedBy", column=@Column(name="LT_LAST_MODIFIED_BY")),
+    @AttributeOverride(name="active", column=@Column(name="LT_ACTIVE")),
+    @AttributeOverride(name="lastModifiedDate", column=@Column(name="LT_LAST_MODIFIED_DATE"))
+})
+public class Lot extends Auditable<String>
 {
 	@Id 
 	@Column(name="LT_ID_A")
@@ -36,11 +49,11 @@ public class Lot
 	@Column(name="LT_DUE_DATE")
 	private GregorianCalendar dueDate;
 
-	@Transient
-	private int quantity;
-	
 	@Column(name="LT_COST")
 	private BigDecimal cost;
+	
+	@Transient
+	private int quantity;
 	
 	@Transient
 	private volatile int hashCode = 0;
